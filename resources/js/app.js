@@ -8,6 +8,8 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import axios from 'axios';
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -20,6 +22,8 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('matches-component', require('./components/MatchesComponent.vue').default);
+Vue.component('hooper-component', require('./components/HooperComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,4 +33,30 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     el: '#app',
+    // data () {
+    //     return {
+    //         matches: []
+    //     }
+    // },
+    // // mounted() {
+    // //     this.getMatches();
+    // // },
+    // methods: {
+    //     getMatches: function() {
+    //         axios.get('/api/matches')
+    //         .then(function(response){
+    //             console.log(response.data)
+    //             this.matches = response.data
+    //         })
+    //         .catch(function(error){
+    //             console.log(error)
+    //         })
+    //     }
+    // },
+    // // el: "#app2",
+    // // components: {
+    // //   Hooper: window.Hooper.Hooper,
+    // //   Slide: window.Hooper.Slide
+    // // }
+    
 });

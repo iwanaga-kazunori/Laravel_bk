@@ -29,6 +29,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
     Route::post('profile/edit', 'Admin\ProfileController@update');
 });
 
+Route::get('sports-api-test', 'SportsController@index');
+Route::get('testapi', 'TestapiController@index');
+Route::get('feed', 'FeedController@feed');
+Route::get('football/teams', 'Football\TeamController@index');
+Route::get('football/team/{id}', 'Football\TeamController@detail')->name('team.detail');
 
 Auth::routes();
 

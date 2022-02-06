@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="container">
-        <p>test_news</p>
         <hr color="#c0c0c0">
         @if (!is_null($headline))
             <div class="row">
@@ -12,7 +11,7 @@
                             <div class="caption mx-auto">
                                 <div class="image">
                                     @if ($headline->image_path)
-                                        <img src="{{ $headline->image_path }}">
+                                        <img src="{{ asset('storage/image/' . $headline->image_path) }}">
                                     @endif
                                 </div>
                                 <div class="title p-2">
@@ -46,7 +45,7 @@
                             </div>
                             <div class="image col-md-6 text-right mt-4">
                                 @if ($post->image_path)
-                                    <img src="{{ $post->image_path }}">
+                                    <img src="{{ asset('storage/image/' . $post->image_path) }}">
                                 @endif
                             </div>
                         </div>
@@ -55,6 +54,18 @@
                 @endforeach
             </div>
         </div>
-    </div>
-    </div>
+    <div id="wrap">
+  <div class="slider">
+    <div><img src="https://dummyimage.com/600x400/d1d1d1/fff.gif" alt="slide-1"></div>
+    <div><img src="https://dummyimage.com/600x400/c7c7c7/fff.gif" alt="slide-2"></div>
+    <div><img src="https://dummyimage.com/600x400/ababab/fff.gif" alt="slide-3"></div>
+  </div>
+
+  
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('.slider').slick();
+    });
+  </script>
 @endsection

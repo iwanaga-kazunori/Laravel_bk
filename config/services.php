@@ -33,5 +33,9 @@ return [
     'sparkpost' => [
         'secret' => env('SPARKPOST_SECRET'),
     ],
+    
+    'sports_api_token' => [
+        'api_token' => env('SPORTS_API_TOKEN'),
+    ],
 
 ];
