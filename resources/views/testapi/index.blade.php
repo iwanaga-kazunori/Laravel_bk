@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         {{-- 各ページごとにtitleタグを入れるために@yieldで空けておきます。 --}}
         <title>@yield('title')</title>
 
@@ -27,8 +27,8 @@
         <h2 class="mx-auto text-center">試合日程・結果</h2>
         <div id="app">
             <!--<matches-component></matches-component>-->
-            <!--<example-component></example-component>-->
-            <hooper-component></hooper-component>
+            <example-component></example-component>
+            <!--<hooper-component></hooper-component>-->
         </div>
         
         
@@ -82,5 +82,6 @@
         @endforeach
         </table>
     </div>
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

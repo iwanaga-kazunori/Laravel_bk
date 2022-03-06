@@ -4,98 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\HTML;
-use FeedReader;
+use App\Feed;
 
 class FeedController extends Controller
 {
     //
     public function feed()
     {
+        $url = 'https://kicker.town/feed';
+        $str = preg_replace('/[\x00-\x1f]/',' ',file_get_contents($url));
+        $str = str_replace('<content:' ,'<content_',$str);
+        $str = str_replace('</content:' ,'</content_',$str);
+        $rss = simplexml_load_string($str, NULL, LIBXML_NOCDATA);
+        // dd($rss);
+        $rss_content = [];
+        foreach($rss->channel->item as $item){
         
-        $feed = FeedReader::read('https://kicker.town/feed');
-
-        if ( $feed->error() ) {
-            echo $feed->error();
-        }
-
-        foreach ($feed->get_items() as $item) {
-                //$hash = [];
-                //$hash['site_title'] = $item->get_feed()->get_title();
-                //$site_title = $item->get_feed()->get_title();
-                //$hash['title'] = trim($item->get_title());
-            $title = $item->get_title();
-            $description = $item->get_description();
-            $category = $item->get_category();
-            $label = $category->get_label();
-            
-                //$hash['permalink'] = trim($item->get_permalink());
-            $permalink = $item->get_permalink();
-            $date = $item->get_date('Y/m/d');
-                //$hash['link'] = trim($item->get_link());
-                //$hash['date'] = $item->get_date('Y-m-d H:i:s');
-                //$hash['content'] = $item->get_content();
-            $content = $item->get_content();
-            $search = array('<p>','</p>','<br>');
-            $replace = array('','','');
-            $content1 = str_replace($search,$replace,$content);
-            $content2 = explode ('　',$content1);
-            $img = $content2[0];
-            //$sentence1 = $content2[1];
-            //$sentence2 = $content2[2];
-            
-            //for ($i = 1; $i < 10 ;$i++){
-                //if( empty($content2[$i]) ){
-                    //continue;
-                //} else {
-                    //$content.$i = $content[$i];
-                //}
-            //}
-            //echo $title;
-            //echo "<br>\n";
-            //echo $label;
-            //echo "<br>\n";
-            //echo $description;
-            //echo "<br>\n";
-            //echo $content;
-            //echo "<br>\n";
-            //echo $img;
-            //echo "<br>\n";
-            //echo $sentence1;
-            //echo "<br>\n";
-            //echo $sentence2;
-            //echo "<br>\n";
-            //echo "////////////////////";
-            //echo "<br>\n";
-            //echo $content2[3];
-            //echo "<br>\n";
-            //echo $content2[4];
-            //echo "<br>\n";
-            //echo $content2[5];
-            //echo "<br>\n";
-            //echo $content2[6];
-            //echo "<br>\n";
-            //echo $content2[7];
-            //echo "<br>\n";
-                //$hash['category'] = $item->get_category();
-                //$hash['description'] = $item->get_description();
-            //$site_body = $item->get_feed();
-            $rss_content[] = [
-                    //'site_title' => $site_title,
+        $title = $item->title;
+        $link = $item->link;
+        $pubDate = $item->pubDate;
+        $date = date('Y/m/d', strtotime($pubDate));
+        $category = $item->category[0];
+        $guid = $item->guid;
+        $newsId = substr($guid, 23);
+        $description = $item->description;
+        
+        $content = $item->content_encoded;
+        $search = array('<p>','</p>');
+        $replace = array('','');
+        $content1 = str_replace($search,$replace,$content);
+        $content2 = explode ('<br />',$content1);
+        $content3 = str_replace ('　','',$content2);
+        $img = $content3[0];
+        $sentence1 = $content3[1];
+        $sentence1 = mb_substr($sentence1, 0, 40);
+        //$sentence2 = $content2[2];
+        
+        $rss_content[] = [
                 'title' => $title,
-                'label' => $label,
-                'permalink' => $permalink,
-                'description' => $description,
-                //'content' => $content,
-                'img' => $img,
+                'link' => $link,
                 'date' => $date,
-                //'sentence1' => $sentence1,
-                //'sentence2' => $sentence2,
-                //'site_body' => $site_body
+                'category' => $category,
+                'newsId' => $newsId,
+                'description' => $description,
+                'content' => $content,
                 
-                ];
+                'img' => $img,
+                'sentence' => $sentence1,
+        ];
         }
-        //echo print_r($hash);
-        
+        $feed = new Feed;
+        $feed->fill($rss_content);
+        $feed->save();
         return view('feed.index', ['rss_content' => $rss_content]);
     }
 }

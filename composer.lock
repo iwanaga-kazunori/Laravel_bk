@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05b0626016faf72a3adc54fc9414553b",
+    "content-hash": "e2fe14a00c48912884510c452c45e68f",
     "packages": [
         {
             "name": "awjudd/feed-reader",

@@ -19,10 +19,13 @@
         "lodash": "^4.17.5",
         "popper.js": "^1.12",
         "resolve-url-loader": "^5.0.0",
-        "sass": "^1.15.2",
-        "sass-loader": "^7.1.0",
         "vue": "^2.5.17",
+        "vue-loader": "^15.9.8",
         "vue-template-compiler": "^2.6.8"
+    },
+    "dependencies": {
+        "sass": "^1.49.7",
+        "sass-loader": "^12.6.0",
+        "vue-js-modal": "^2.0.1"
     }
-    
 }
