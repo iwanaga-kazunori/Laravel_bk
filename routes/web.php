@@ -22,7 +22,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
     Route::get('news/edit', 'Admin\NewsController@edit');
     Route::post('news/edit', 'Admin\NewsController@update');
     Route::get('news/delete', 'Admin\NewsController@delete');
-    
+
     Route::get('profile/create', 'Admin\ProfileController@add');
     Route::post('profile/create', 'Admin\ProfileController@create');
     Route::get('profile/edit', 'Admin\ProfileController@edit');
@@ -32,6 +32,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
 Route::get('sports-api-test', 'SportsController@index');
 Route::get('testapi', 'TestapiController@index');
 Route::get('feed', 'FeedController@feed');
+Route::get('feedRead', 'FeedController@feedRead');
 Route::get('football/teams', 'Football\TeamController@index');
 Route::get('football/team/{id}', 'Football\TeamController@detail')->name('team.detail');
 
