@@ -81,8 +81,18 @@ class FeedController extends Controller
         return view('feed.index', ['rss_content' => $rss_contents]);
     }
 
-    public function apiFeed()
+
+    public function feedRead()
     {
-        
+        return view('feed.read');
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiFeed(): \Illuminate\Http\JsonResponse
+    {
+        $feed = Feed::limit(5)->get();
+        return response()->json($feed);
     }
 }

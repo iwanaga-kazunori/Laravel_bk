@@ -24,10 +24,10 @@ Vue.use(VModal);
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 // Vue.component('matches-component', require('./components/MatchesComponent.vue').default);
 // Vue.component('hooper-component', require('./components/HooperComponent.vue').default);
-Vue.component('modal-component', require('./components/ModalComponent.vue').default);
+// Vue.component('modal-component', require('./components/ModalComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -43,7 +43,7 @@ const app = new Vue({
         }
     },
     mounted () {
-        // this.getMatches()  
+        // this.getMatches()
     },
     methods: {
         getMatches () {
@@ -56,19 +56,19 @@ const app = new Vue({
                 console.log(error)
             })
         },
-        
+
     },
-    el: '#app',
-  methods: {
-    show : function() {
-      this.$modal.show('hello-world');
-    },
-    hide : function () {
-      this.$modal.hide('hello-world');
-    },
-  },
-    
-    
+  //       el: '#app',
+  //     methods: {
+  //       show : function() {
+  //         this.$modal.show('hello-world');
+  //       },
+  //       hide : function () {
+  //         this.$modal.hide('hello-world');
+  //       },
+  // },
+
+
 //     el: '#app2',
 // 　　data: {
 // 　　　　modalVisible: false, // モーダル
@@ -83,10 +83,10 @@ const app = new Vue({
 //       this.modalVisible = false
 //       this.modalBgVisible = false
 //     },
-//     cancelEvent: function(){ 
-//      event.stopPropagation() 
+//     cancelEvent: function(){
+//      event.stopPropagation()
 //     }
 //   },
-  
-  
+
+
 });
