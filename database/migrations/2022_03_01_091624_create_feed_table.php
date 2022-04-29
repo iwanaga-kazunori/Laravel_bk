@@ -20,7 +20,7 @@ class CreateFeedTable extends Migration
             $table->string('date'); // ニュースの日付を保存するカラム
             $table->string('category'); // ニュースのカテゴリー（チーム名）を保存するカラム
             $table->string('newsId'); // ニュースのID（リンクURLより設定）を保存するカラム
-            $table->string('description'); // ニュースの説明を保存するカラム
+            $table->string('description', 1024); // ニュースの説明を保存するカラム
             $table->text('content'); // ニュースのID（リンクURLより設定）を保存するカラム
             $table->timestamps();
         });

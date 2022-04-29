@@ -12,9 +12,9 @@
       <p>{!!$value['img']!!}</p>
     </div>
     <div style="width:50%;float:right;">
-      <p style="font-size:0.9em;">{!!$value['sentence']!!}&hellip;</p>
-      <p style="font-size:0.9em;">{{$value['category']}}</p>
-      <p style="font-size:0.8em;">{{$value['date']}}</p>
+      <p style="font-size:0.9em;">p1:{!!$value['sentence']!!}&hellip;</p>
+      <p style="font-size:0.9em;">p2:{{$value['category']}}</p>
+      <p style="font-size:0.8em;">p3:{{$value['date']}}</p>
     </div>
   <br><br><br>
   </div>
