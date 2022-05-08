@@ -6,15 +6,15 @@
                 <div v-for="(feed, index) in this.$store.state.feeds" class="col-md-5 m-2 border rounded">
                     <div>{{ feed.title }}</div>
                     <div>{{ feed.link }}</div>
-                    <div> {{ feed.date }}</div>
+                    <div>{{ feed.date }}</div>
                     <div>{{ feed.category }}</div>
                     <div>{{ feed.description }}</div>
                     <div>
-                        <button @click="show(index)" class="button">show</button>
+                        <button @click="ModalShow(index)" class="button">show</button>
                     </div>
                 </div>
             </div>
-            <modal name="hello-world" v-on:click="show" :draggable="true" :resizable="true">
+            <modal name="hello-world" v-on:click="ModalShow" :draggable="true" :resizable="true">
                 <div class="modal-header">
                     <h2>コメント投稿</h2>
                 </div>
@@ -23,19 +23,23 @@
                         <div>{{ this.$store.state.feeds[this.$store.state.selectFeedId].title }}</div>
                         <div>
                             <textarea
-                                row="5"
-                                v-model="this.$store.state.postComment"
-                            ></textarea>
+                                v-model="commentForm"
+                                ></textarea>
                         </div>
                         <div>
-                            <button v-on:click="sendPostComment">
-                                投稿する
+                            <button v-on:click="SendPostComment">
+                                <sapn v-if="isSending">
+                                    投稿中(しばらくお待ちください)
+                                </sapn>
+                                <span v-else>
+                                    投稿する
+                                </span>
                             </button>
                         </div>
                     </div>
 
                 </div>
-                <button v-on:click="hide">
+                <button v-on:click="ModalHide">
                     閉じる
                 </button>
             </modal>
@@ -55,32 +59,40 @@ Vue.use(VModal)
 
 export default {
     name: "FeedList",
-
+    data () {
+        return {
+            isSending: false,
+        }
+    },
     // メソッド一覧
     methods: {
         button4 () {
             this.$store.commit('getFeeds')
         },
-        show (i) {
-            console.log("show")
-            console.log(i)
-
+        ModalShow (i) {
             this.$store.commit('selectFeedId', i)
             this.$modal.show('hello-world')
         },
-        hide () {
-            console.log("hide")
+        ModalHide () {
             this.$modal.hide('hello-world')
         },
-        sendPostComment () {
-            console.log('postComment')
+        SendPostComment () {
+            let url = '/api/feed'
             let params = {
-                news_id: this.$store.state.selectFeedId,
+                feed_id: this.$store.state.selectFeedId,
                 comment: this.$store.state.postComment
             }
-            console.log(params)
 
-            // axios.post()
+            // Ajaxでデータを投げる
+            axios.put(url, params)
+                .then(function (response) {
+                    this.ModalHide()
+                    console.log(response)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+
         }
     },
     // 読み込み直後に起動するもの
@@ -88,12 +100,20 @@ export default {
         this.button4()
     },
     computed: {
-        postComment: {
+        commentForm: {
             get () {
                 return this.$store.getters.postComment
             },
             set (value) {
-                // this.$store.dispatch('getPostComment', value)
+                this.$store.commit('setPostComment', value)
+            }
+        },
+        isSending: {
+            get () {
+                return this.$store.getters.isSending
+            },
+            set () {
+                this.$store.commit('isSending',)
             }
         }
     }
@@ -111,6 +131,10 @@ div.week {
 }
 .modal-header, modal-body {
     padding: 5px 25px;
+}
+.modal-body > textarea {
+    width: 400px;
+    color: #ff0000;
 }
 .modal-header {
     border-bottom: 1px solid #ddd;
