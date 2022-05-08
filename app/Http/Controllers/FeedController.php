@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\HTML;
 use App\Feed;
+use App\Http\Resources\FeedCollection;
 
 class FeedController extends Controller
 {
@@ -96,8 +97,9 @@ class FeedController extends Controller
         $feed = Feed::orderByDesc('created_at')
             ->limit(5)
             ->get();
+        $collection = new FeedCollection($feed);
 
-        return response()->json($feed);
+        return response()->json($collection);
     }
 
     public function apiStore(Request $request)

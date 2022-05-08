@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('matches', 'TestapiController@api');
 
 Route::get('feed', 'FeedController@apiFeed');
+Route::put('feed', 'FeedController@apiStore');
