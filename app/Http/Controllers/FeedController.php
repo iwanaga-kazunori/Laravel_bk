@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\FeedComment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\HTML;
@@ -92,7 +93,30 @@ class FeedController extends Controller
      */
     public function apiFeed(): \Illuminate\Http\JsonResponse
     {
-        $feed = Feed::limit(5)->get();
+        $feed = Feed::orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+
         return response()->json($feed);
+    }
+
+    public function apiStore(Request $request)
+    {
+        $form = $request->all();
+
+        // 開発用にユーザーIDをセットする
+        $form['user_id'] = 1;
+        $form['created_at'] = Carbon::now();
+        $form['updated_at'] = Carbon::now();
+
+        $feedComment = new FeedComment;
+
+        // これだと created_atとupdated_atが入らない。
+        $id = $feedComment->insertGetId($form);
+
+        $result = [
+            'data' => $feedComment->get(),
+        ];
+        return response()->json($result);
     }
 }

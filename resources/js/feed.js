@@ -45,12 +45,15 @@ const store = new Vuex.Store({
         selectFeedId (state, i) {
             state.selectFeedId = i
         },
-        // getPostComment () {
-        //     return state.postComment
-        // },
-        setPostComment (state, comment) {
-            state.postComment = comment
-        }
+        // 記事のコメントを一時取得する
+        getPostComment () {
+            return state.postComment
+        },
+        // 記事のコメントを一時的に保存する
+        setPostComment (state, value) {
+            state.postComment = value
+        },
+
     },
 });
 
