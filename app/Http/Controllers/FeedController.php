@@ -70,7 +70,6 @@ class FeedController extends Controller
                 // DBに情報がなければ登録する
                 Feed::insert($rss_content);
             }
-            Feed::insert($rss_content);
 
             // DBに入れないものを表示用に追加する
             $rss_content['img'] = $img;
@@ -97,9 +96,14 @@ class FeedController extends Controller
         $feed = Feed::orderByDesc('created_at')
             ->limit(5)
             ->get();
-        $collection = new FeedCollection($feed);
 
-        return response()->json($collection);
+//        $collection = new FeedCollection($feed);
+//
+//        return response()->json($collection);
+
+
+        return response()->json($feed);
+
     }
 
     public function apiStore(Request $request)
@@ -120,5 +124,15 @@ class FeedController extends Controller
             'data' => $feedComment->get(),
         ];
         return response()->json($result);
+    }
+
+    /**
+     * @param $feedId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiGetComments($feedId): \Illuminate\Http\JsonResponse
+    {
+        $feed = FeedComment::where('feed_id', '=', $feedId)->orderByDesc('created_at')->get();
+        return response()->json($feed);
     }
 }
