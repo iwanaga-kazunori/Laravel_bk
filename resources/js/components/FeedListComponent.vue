@@ -26,6 +26,7 @@
                                 v-model="commentForm"
                                 ></textarea>
                         </div>
+                        <comment-list></comment-list>
                         <div>
                             <button v-on:click="SendPostComment">
                                 <sapn v-if="isSending">
@@ -43,9 +44,6 @@
                     閉じる
                 </button>
             </modal>
-
-            <div>selectFeedId : {{ this.$store.state.selectFeedId }}</div>
-            <div>feed : {{ this.$store.state.feeds[this.$store.state.selectFeedId] }}</div>
         </div>
     </div>
 </template>
@@ -54,16 +52,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VModal from 'vue-js-modal'
+import CommentList from './CommentList'
 Vue.use(Vuex)
 Vue.use(VModal)
 
 export default {
     name: "FeedList",
-    data () {
-        return {
-            isSending: false,
-        }
-    },
     // メソッド一覧
     methods: {
         button4 () {
@@ -93,11 +87,12 @@ export default {
                     console.log(error)
                 })
 
-        }
+        },
     },
     // 読み込み直後に起動するもの
     mounted () {
         this.button4()
+        this.getComments()
     },
     computed: {
         commentForm: {
@@ -116,6 +111,9 @@ export default {
                 this.$store.commit('isSending',)
             }
         }
+    },
+    components: {
+        CommentList
     }
 }
 </script>

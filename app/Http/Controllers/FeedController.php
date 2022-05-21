@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\HTML;
 use App\Feed;
+use App\Http\Resources\FeedCollection;
 
 class FeedController extends Controller
 {
@@ -69,7 +70,6 @@ class FeedController extends Controller
                 // DBに情報がなければ登録する
                 Feed::insert($rss_content);
             }
-            Feed::insert($rss_content);
 
             // DBに入れないものを表示用に追加する
             $rss_content['img'] = $img;
@@ -97,7 +97,13 @@ class FeedController extends Controller
             ->limit(5)
             ->get();
 
+//        $collection = new FeedCollection($feed);
+//
+//        return response()->json($collection);
+
+
         return response()->json($feed);
+
     }
 
     public function apiStore(Request $request)
@@ -118,5 +124,15 @@ class FeedController extends Controller
             'data' => $feedComment->get(),
         ];
         return response()->json($result);
+    }
+
+    /**
+     * @param $feedId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiGetComments($feedId): \Illuminate\Http\JsonResponse
+    {
+        $feed = FeedComment::where('feed_id', '=', $feedId)->orderByDesc('created_at')->get();
+        return response()->json($feed);
     }
 }

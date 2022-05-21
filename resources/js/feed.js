@@ -15,7 +15,8 @@ const store = new Vuex.Store({
         weeks: [],
         feeds: [],
         selectFeedId: null,
-        postComment: 'ポストコメント'
+        postComment: 'ポストコメント',
+        comments: [],
     },
     mutations: {
         setWeek () {
