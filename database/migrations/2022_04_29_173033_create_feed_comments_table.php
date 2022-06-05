@@ -18,6 +18,7 @@ class CreateFeedCommentsTable extends Migration
 
             $table->unsignedBigInteger('feed_id');
             $table->unsignedBigInteger('user_id');
+            $table->string('news_id');
 
             $table->foreign('feed_id')->references('id')->on('feed');
             $table->foreign('user_id')->references('id')->on('users');

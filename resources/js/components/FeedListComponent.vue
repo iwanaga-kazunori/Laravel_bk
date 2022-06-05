@@ -1,32 +1,37 @@
 <template>
     <div>
-        <h2>feed list</h2>
         <div>
             <div class="col-md-10 row">
-                <div v-for="(feed, index) in this.$store.state.feeds" class="col-md-5 m-2 border rounded">
-                    <div>{{ feed.title }}</div>
-                    <div>{{ feed.link }}</div>
+                <div v-for="(feed, index) in feeds" class="col-md-5 m-2 border rounded feed" @click="ModalShow(index)">
+                    <h3>{{ feed.title }}</h3>
+                    <p>NEWSID:{{ feed.news_id }}</p>
+                    <div><img :src="feed.img_path"></div>
+                    <div>{{ feed.description }}&hellip;</div>
                     <div>{{ feed.date }}</div>
-                    <div>{{ feed.category }}</div>
-                    <div>{{ feed.description }}</div>
-                    <div>
-                        <button @click="ModalShow(index)" class="button">show</button>
-                    </div>
+                    <div>{{ feed.team }}</div>                   
                 </div>
             </div>
-            <modal name="hello-world" v-on:click="ModalShow" :draggable="true" :resizable="true">
-                <div class="modal-header">
-                    <h2>コメント投稿</h2>
+            <modal 
+                name="hello-world" 
+                v-on:click="ModalShow"
+                :draggable="true"
+                :resizable="true"
+                
+                height="80%">
+                <div class="modal-header" v-if="this.$store.state.selectFeedId !== null">
+                    <h3>{{ feeds[this.$store.state.selectFeedId].title }}</h3>
                 </div>
                 <div class="modal-body">
                     <div class="" v-if="this.$store.state.selectFeedId !== null">
-                        <div>{{ this.$store.state.feeds[this.$store.state.selectFeedId].title }}</div>
+                        <div>{{ feeds[this.$store.state.selectFeedId].news_id }}</div>
+                        <div v-html="feeds[this.$store.state.selectFeedId].content">{{ feeds[this.$store.state.selectFeedId].content }}</div>
+                        <comment-list></comment-list>
                         <div>
                             <textarea
                                 v-model="commentForm"
                                 ></textarea>
                         </div>
-                        <comment-list></comment-list>
+                        
                         <div>
                             <button v-on:click="SendPostComment">
                                 <sapn v-if="isSending">
@@ -37,6 +42,8 @@
                                 </span>
                             </button>
                         </div>
+                        <hr>
+                        
                     </div>
 
                 </div>
@@ -68,33 +75,39 @@ export default {
             this.$modal.show('hello-world')
         },
         ModalHide () {
-            this.$modal.hide('hello-world')
+            this.$modal.hide('hello-world')            
         },
-        SendPostComment () {
+        async SendPostComment () {
             let url = '/api/feed'
             let params = {
                 feed_id: this.$store.state.selectFeedId,
                 comment: this.$store.state.postComment
             }
-
             // Ajaxでデータを投げる
-            axios.put(url, params)
+            await axios.put(url, params)
                 .then(function (response) {
-                    this.ModalHide()
+                    // this.ModalHide()
                     console.log(response)
+                    
                 })
                 .catch(function (error) {
                     console.log(error)
                 })
-
+            this.ModalHide()
         },
     },
     // 読み込み直後に起動するもの
     mounted () {
         this.button4()
-        this.getComments()
+        // this.getComments()
     },
     computed: {
+        feeds: function(){
+  		        return this.$store.state.feeds
+  	    },
+        selectFeedId: function(){
+  		        return this.$store.state.selectFeedId
+  	    },
         commentForm: {
             get () {
                 return this.$store.getters.postComment
@@ -137,5 +150,7 @@ div.week {
 .modal-header {
     border-bottom: 1px solid #ddd;
 }
-
+img {
+    width:100%;
+}
 </style>

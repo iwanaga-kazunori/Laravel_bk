@@ -11,6 +11,7 @@ class FeedComment extends Model
     protected $fillable = [
         'comment',
         'feed_id',
-        'user_id'
+        'user_id',
+        'news_id'
     ];
 }

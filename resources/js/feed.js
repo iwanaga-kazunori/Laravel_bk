@@ -12,24 +12,26 @@ import FeedList from './components/FeedListComponent'
 const store = new Vuex.Store({
     state: {
         // message: 'Hello World',
-        weeks: [],
+        // weeks: [],
         feeds: [],
         selectFeedId: null,
         postComment: 'ポストコメント',
         comments: [],
+        tcomments: [],
+        
     },
     mutations: {
-        setWeek () {
-            this.state.weeks = [
-                {ja:'日', en:'Sun'},
-                {ja:'月', en:'Mon'},
-                {ja:'火', en:'Tue'},
-                {ja:'水', en:'Wed'},
-                {ja:'木', en:'Thu'},
-                {ja:'金', en:'Fri'},
-                {ja:'土', en:'Sat'}
-            ]
-        },
+        // setWeek () {
+        //     this.state.weeks = [
+        //         {ja:'日', en:'Sun'},
+        //         {ja:'月', en:'Mon'},
+        //         {ja:'火', en:'Tue'},
+        //         {ja:'水', en:'Wed'},
+        //         {ja:'木', en:'Thu'},
+        //         {ja:'金', en:'Fri'},
+        //         {ja:'土', en:'Sat'}
+        //     ]
+        // },
         getFeeds (state) {
             const url = '/api/feed'
             axios.get(url)
@@ -54,7 +56,11 @@ const store = new Vuex.Store({
         setPostComment (state, value) {
             state.postComment = value
         },
-
+        addComment (state, { content }) {
+            state.tcomments.push({
+                content,
+            })
+        },
     },
 });
 
@@ -62,4 +68,5 @@ const app = new Vue({
     el: '#app',
     components: { FeedList } ,
     store,
+    
 })

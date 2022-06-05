@@ -1,17 +1,31 @@
 <template>
     <div>
         <h2>コメント一覧</h2>
-        <div v-if="comments.length === 0">
-            コメントがありませんでした。
+        <div v-if="comments.length">
+            <div v-for="(comment, index) in comments" class="row">
+                
+                <div class="col-md-8" style="border-bottom:solid 1px #ccc;">
+                    {{ comment.comment }}
+                </div>
+                <div class="col-md-4" style="border-bottom:solid 1px #ccc;">
+                    {{ comment.created_at }}
+                </div>
+                
+            </div>
         </div>
-        <div v-else v-for="(comment, index) in comments" class="row">
-            <div class="col-md-8">
-                {{ comment.comment }}
+        <div v-else> 
+            <p>コメントがありませんでした。</p>
+        </div>
+        <br><br><br>
+            <div v-for="tcomment in tcomments" v-bind:key="tcomment.id">
+                {{ tcomment.id }}
+                {{ tcomment.content }}
             </div>
-            <div class="col-md-4">
-                {{ comment.created_at }}
-            </div>
-
+        <br><br>
+        <form v-on:submit.prevent="addComment">
+            <textarea type="text" v-model="newComment" placeholder="コメント投稿"></textarea>
+            <button type="submit">投稿</button>
+        </form>
         </div>
     </div>
 </template>
@@ -26,6 +40,14 @@ export default {
     created () {
         this.getComments()
     },
+    data: function () {
+            return {
+                
+                tcomment: "",
+                newComment: '',
+                
+            }  
+        },
     methods: {
         // 該当ニュースのコメントを取得する
         getComments: function () {
@@ -39,7 +61,13 @@ export default {
                 .catch(error => {
                     console.log(error)
                 })
-        }
+        },
+        addComment () {
+                this.$store.commit('addComment', {
+                    content: this.newComment,
+                })
+                this.newComment = ''
+            },
     },
     computed: {
         comments: {
@@ -47,7 +75,10 @@ export default {
                 let feedId = this.$store.state.selectFeedId
                 return this.$store.state.comments[feedId]
             }
-        }
+        },
+        tcomments () {
+                return this.$store.state.tcomments
+            },
     }
 }
 </script>

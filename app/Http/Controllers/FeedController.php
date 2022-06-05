@@ -14,66 +14,65 @@ class FeedController extends Controller
     //
     public function feed()
     {
+        // RSSのURL
         $url = 'https://kicker.town/feed';
+        // 制御文字を取り除く
+        $str = preg_replace('/[\x00-\x1f]/',' ',file_get_contents($url));
+        //contentを取り出す
+        $str = str_replace('<content:' ,'<content_',$str);  
+        $str = str_replace('</content:' ,'</content_',$str);
+        $rss = simplexml_load_string($str, NULL, LIBXML_NOCDATA);
 
-        // 簡単にXMLを取得する
-        $rss = simplexml_load_file($url);
-
-//        $str = preg_replace('/[\x00-\x1f]/',' ',file_get_contents($url));
-//        $str = str_replace('<content:' ,'<content_',$str);
-//        $str = str_replace('</content:' ,'</content_',$str);
-//        $rss = simplexml_load_string($str, NULL, LIBXML_NOCDATA);
-        // dd($rss);
+        // 初期化
         $rss_contents = [];
+
         foreach($rss->channel->item as $item){
-
-            $title = (string)$item->title;
-            $link = (string)$item->link;
-            $pubDate = (string)$item->pubDate;
-            $date = date('Y/m/d', strtotime($pubDate));
-            $category = (string)$item->category[0];
-            $guid = (string)$item->guid;
-            $newsId = substr($guid, 23);
-            $content = (string)$item->description;
-
-//            $content = $item->content_encoded;
-            $search = array('<p>','</p>');
-            $replace = array('','');
-            $content1 = str_replace($search,$replace,$content);
-            $content2 = explode ('<br />',$content1);
-            $content3 = str_replace ('　','',$content2);
-            $img = $content3[0] ?? '';
-            $sentence1 = $content3[1] ?? '';
-            $sentence1 = mb_substr($sentence1, 0, 40);
-
-            $cont1 = str_replace(['<p>', '</p>'], ['', ''], (string)$item->description);
-
-            //$sentence2 = $content2[2];
-            $description = $content2[0];
+            $title = (string)$item->title;  //タイトル　＊＊＊
+            $link = (string)$item->link;  //リンク　＊＊＊
+            $pubDate = (string)$item->pubDate;  //元の日時Fri, 03 Jun 2022 22:44:14 +0000
+            $date = date('Y/m/d', strtotime($pubDate));  //0000/00/00　＊＊＊
+            $team = (string)$item->category[0];  //チーム名　＊＊＊
+            $guid = (string)$item->guid;  //元ページのリダイレクトURL
+            $news_id = substr($guid, 23);  //記事のURLから抽出した番号　＊＊＊
+            //説明文
+            $description = $item->description;  //元の説明文
+            $description = str_replace('　','',$description);  //空白削除
+            $description = str_replace('<p>','',$description);  //<p>削除
+            $description = mb_substr($description, 0, 40);  //40文字だけ切り取り　＊＊＊
+            $content = $item->content_encoded;  //本文全部　＊＊＊
+            //画像URL抽出
+            $target_text = $content;  //対象の文字列
+            $delimiter_start = 'src="';  //区切り文字（開始）
+            $delimiter_end = '" alt=""';  //区切り文字（終了）
+            $start_position = strpos($target_text, $delimiter_start) + strlen($delimiter_start);  //開始位置
+            $length = strpos($target_text, $delimiter_end) - $start_position;  //切り出す部分の長さ
+            $img_path = substr($target_text, $start_position, $length );  //切り出し　＊＊＊
+            
+            //contennt不要部分削除
+            $delimiter_end2 = '<p>The post';  //区切り文字（終了）
+            $start_position2 = 0;  //開始位置
+            $length2 = strpos($target_text, $delimiter_end2) - $start_position2;  //切り出す部分の長さ
+            $content = substr($target_text, $start_position2, $length2);  //切り出し　＊＊＊
 
             // 登録用の配列を作る
             $rss_content = [
-                    'title' => $title,
-                    'link' => $link,
-                    'date' => $date,
-                    'category' => $category,
-                    'newsId' => $newsId,
-                    'description' => $description,
-                'content' => '',
-
+                'news_id' => $news_id,
+                'title' => $title,
+                'date' => $date,
+                'link' => $link,
+                'team' => $team,
+                'description' => $description,
+                'content' => $content,
+                'img_path' => $img_path,
                 'updated_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
             ];
-
-            $check = Feed::where('link', '=',  $link)->first();
-            if ($check === null) {
+            
+            $check = Feed::where('news_id', '=',  $news_id)->first();
+                if ($check === null) {
                 // DBに情報がなければ登録する
                 Feed::insert($rss_content);
             }
-
-            // DBに入れないものを表示用に追加する
-            $rss_content['img'] = $img;
-            $rss_content['sentence'] = $sentence1;
 
             // 表示用にすべてを配列に入れる
             $rss_contents[] = $rss_content;
@@ -112,16 +111,18 @@ class FeedController extends Controller
 
         // 開発用にユーザーIDをセットする
         $form['user_id'] = 1;
+        $form['news_id'] = '123';
         $form['created_at'] = Carbon::now();
         $form['updated_at'] = Carbon::now();
 
         $feedComment = new FeedComment;
 
         // これだと created_atとupdated_atが入らない。
-        $id = $feedComment->insertGetId($form);
-
+        $feedComment->fill($form)->save();
+        $feedComment->get();
+        $id = $feedComment->id;
         $result = [
-            'data' => $feedComment->get(),
+            'data' => $id,
         ];
         return response()->json($result);
     }
