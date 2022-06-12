@@ -16,6 +16,7 @@ const store = new Vuex.Store({
         feeds: [],
         selectFeedId: null,
         postComment: 'ポストコメント',
+        newsId: null,
         comments: [],
         tcomments: [],
         

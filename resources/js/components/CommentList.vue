@@ -22,10 +22,10 @@
                 {{ tcomment.content }}
             </div>
         <br><br>
-        <form v-on:submit.prevent="addComment">
+        <!--<form v-on:submit.prevent="addComment">
             <textarea type="text" v-model="newComment" placeholder="コメント投稿"></textarea>
             <button type="submit">投稿</button>
-        </form>
+        </form>-->
         </div>
     </div>
 </template>

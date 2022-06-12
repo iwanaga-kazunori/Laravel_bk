@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 use App\FeedComment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\HTML;
 use App\Feed;
+use App\Services\ApiTokenService;
+use App\Http\Controllers\ApiTokenController;
 use App\Http\Resources\FeedCollection;
 
 class FeedController extends Controller
 {
+    private ApiTokenService $apiTokenService;
+    public function __construct(ApiTokenService $apiTokenService)
+    {
+       $this->apiTokenService = $apiTokenService;
+    }
     //
     public function feed()
     {
@@ -82,9 +90,13 @@ class FeedController extends Controller
     }
 
 
-    public function feedRead()
+    public function feedRead(Request $request)
     {
-        return view('feed.read');
+        $user = Auth::user();
+        
+        $token = $this->apiTokenService->update($request);
+        // dd($user);
+        return view('feed.read', ['user' => $user]);
     }
 
     /**
@@ -114,7 +126,6 @@ class FeedController extends Controller
         $form['news_id'] = '123';
         $form['created_at'] = Carbon::now();
         $form['updated_at'] = Carbon::now();
-
         $feedComment = new FeedComment;
 
         // これだと created_atとupdated_atが入らない。

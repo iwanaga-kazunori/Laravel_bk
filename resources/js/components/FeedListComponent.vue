@@ -26,21 +26,27 @@
                         <div>{{ feeds[this.$store.state.selectFeedId].news_id }}</div>
                         <div v-html="feeds[this.$store.state.selectFeedId].content">{{ feeds[this.$store.state.selectFeedId].content }}</div>
                         <comment-list></comment-list>
-                        <div>
-                            <textarea
-                                v-model="commentForm"
+
+                        <div v-if="arrayAttribute != null">
+                            <div>
+                                <textarea
+                                    v-model="commentForm"
                                 ></textarea>
+                                
+                            </div>
+                            <div>
+                                <button v-on:click="SendPostComment">
+                                    <sapn v-if="isSending">
+                                        投稿中(しばらくお待ちください)
+                                    </sapn>
+                                    <span v-else>
+                                        投稿する
+                                    </span>
+                                </button>
+                            </div>
                         </div>
-                        
-                        <div>
-                            <button v-on:click="SendPostComment">
-                                <sapn v-if="isSending">
-                                    投稿中(しばらくお待ちください)
-                                </sapn>
-                                <span v-else>
-                                    投稿する
-                                </span>
-                            </button>
+                        <div v-else>
+                            <p>ログインしていません</p>
                         </div>
                         <hr>
                         
@@ -82,6 +88,7 @@ export default {
             let params = {
                 feed_id: this.$store.state.selectFeedId,
                 comment: this.$store.state.postComment
+                
             }
             // Ajaxでデータを投げる
             await axios.put(url, params)
@@ -125,6 +132,9 @@ export default {
             }
         }
     },
+    props: {
+            arrayAttribute: Array,
+        },
     components: {
         CommentList
     }
