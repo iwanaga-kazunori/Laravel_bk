@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Str;
-
+use Illuminate\Http\Request;
 class ApiTokenService
 {
     /**
@@ -11,7 +11,7 @@ class ApiTokenService
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function update($request)
+    public function update(Request $request)
     {
         $token = Str::random(60);
 

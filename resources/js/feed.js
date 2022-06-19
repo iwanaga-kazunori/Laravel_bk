@@ -34,7 +34,9 @@ const store = new Vuex.Store({
         //     ]
         // },
         getFeeds (state) {
-            const url = '/api/feed'
+            let token = document.head.querySelector('meta[name=csrf-token]')
+            console.log(token)
+            const url = '/api/feed?api_token=' + token.content
             axios.get(url)
                 .then(function (response) {
                     store.commit('setFeeds', response.data)
