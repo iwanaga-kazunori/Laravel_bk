@@ -32,7 +32,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
 Route::get('sports-api-test', 'SportsController@index');
 Route::get('testapi', 'TestapiController@index');
 Route::get('feed', 'FeedController@feed');
-Route::get('feedRead', 'FeedController@feedRead');
+Route::get('feedRead', 'FeedController@feedRead')->middleware('auth');
 Route::get('football/teams', 'Football\TeamController@index');
 Route::get('football/team/{id}', 'Football\TeamController@detail')->name('team.detail');
 
