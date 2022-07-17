@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="api-token" content="{{ $user->api_token }}">
+    <meta name="user_id" content="{{ $user->id }}">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     <link href="{{ asset('css/modal.css') }}" rel="stylesheet">
@@ -63,6 +64,7 @@
             </div>
         </nav>
     <h2>Feed一覧</h2>
+    
     <div>
         <feed-list :array-attribute='@json($user)'></feed-list>
     </div>

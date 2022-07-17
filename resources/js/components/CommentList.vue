@@ -26,7 +26,6 @@
             <textarea type="text" v-model="newComment" placeholder="コメント投稿"></textarea>
             <button type="submit">投稿</button>
         </form>-->
-        </div>
     </div>
 </template>
 
@@ -51,8 +50,10 @@ export default {
     methods: {
         // 該当ニュースのコメントを取得する
         getComments: function () {
+            let token = document.head.querySelector('meta[name=api-token]')
+            console.log(token)
             let feedId = this.$store.state.selectFeedId
-            let url = '/api/comments/' + feedId
+            let url = '/api/comments/' + feedId + '?api_token=' + token.content
 
             axios({method: 'get',  url: url})
                 .then(response => {

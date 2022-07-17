@@ -18,6 +18,6 @@ class Feed extends Model
 
     public function comments()
     {
-        return $this->hasMany('App\FeedComment');
+        return $this->hasMany(FeedComment::class, 'news_id');
     }
 }

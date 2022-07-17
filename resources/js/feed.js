@@ -8,7 +8,6 @@ import axios from 'axios'
 Vue.use(Vuex)
 
 import FeedList from './components/FeedListComponent'
-
 const store = new Vuex.Store({
     state: {
         // message: 'Hello World',
@@ -16,7 +15,6 @@ const store = new Vuex.Store({
         feeds: [],
         selectFeedId: null,
         postComment: 'ポストコメント',
-        newsId: null,
         comments: [],
         tcomments: [],
         
@@ -37,6 +35,7 @@ const store = new Vuex.Store({
             let token = document.head.querySelector('meta[name=api-token]')
             console.log(token)
             const url = '/api/feed?api_token=' + token.content
+            
             axios.get(url)
                 .then(function (response) {
                     store.commit('setFeeds', response.data)

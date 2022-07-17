@@ -15,7 +15,7 @@
                 name="hello-world" 
                 v-on:click="ModalShow"
                 :draggable="true"
-                :resizable="true"
+                
                 
                 height="80%">
                 <div class="modal-header" v-if="this.$store.state.selectFeedId !== null">
@@ -23,10 +23,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="" v-if="this.$store.state.selectFeedId !== null">
-                        <div>{{ feeds[this.$store.state.selectFeedId].news_id }}</div>
-                        <div v-html="feeds[this.$store.state.selectFeedId].content">{{ feeds[this.$store.state.selectFeedId].content }}</div>
+                        <div ref="news_id">{{ feeds[this.$store.state.selectFeedId].news_id }}</div>
+                        <div v-html="feeds[this.$store.state.selectFeedId].content"></div>
                         <comment-list></comment-list>
-
+                        
                         <div v-if="arrayAttribute != null">
                             <div>
                                 <textarea
@@ -85,11 +85,20 @@ export default {
         },
         async SendPostComment () {
             let url = '/api/feed'
+            //userのidを取得
+            let user_id = document.head.querySelector('meta[name=user_id]')
+            console.log(user_id.content)
+            //userのnews_idを取得
+            var news_id = this.$refs.news_id
+            console.log(news_id.innerHTML)
+            
             let params = {
                 feed_id: this.$store.state.selectFeedId,
-                comment: this.$store.state.postComment
-                
+                comment: this.$store.state.postComment,
+                user_id: user_id.content,
+                news_id: news_id.innerHTML
             }
+            
             // Ajaxでデータを投げる
             await axios.put(url, params)
                 .then(function (response) {
@@ -107,6 +116,7 @@ export default {
     mounted () {
         this.button4()
         // this.getComments()
+        
     },
     computed: {
         feeds: function(){
