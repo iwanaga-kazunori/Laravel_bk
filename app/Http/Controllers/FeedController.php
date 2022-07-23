@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\FeedComment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -84,9 +85,13 @@ class FeedController extends Controller
 
             // 表示用にすべてを配列に入れる
             $rss_contents[] = $rss_content;
+            $feeds = Feed::all();
+            $comments = Feed::find(1)->comments;
+            dd($comments);
+            // dd($detail->comments);
         }
 
-        return view('feed.index', ['rss_content' => $rss_contents]);
+        return view('feed.index', ['rss_content' => $rss_contents, 'feeds' => $feeds]);
     }
 
 
@@ -95,8 +100,9 @@ class FeedController extends Controller
         $user = Auth::user();
         
         $token = $this->apiTokenService->update($request);
-        // dd($user);
-        return view('feed.read', ['user' => $user]);
+        
+        // dd($token);
+        return view('feed.read', ['user' => $user, 'token' => $token]);
     }
 
     /**
@@ -107,7 +113,11 @@ class FeedController extends Controller
         $feed = Feed::orderByDesc('created_at')
             ->limit(5)
             ->get();
-
+        
+        foreach ($feed as $detail){
+            $detail->comments;
+        }
+        
 //        $collection = new FeedCollection($feed);
 //
 //        return response()->json($collection);
@@ -122,8 +132,8 @@ class FeedController extends Controller
         $form = $request->all();
 
         // 開発用にユーザーIDをセットする
-        $form['user_id'] = 1;
-        $form['news_id'] = '123';
+        
+        
         $form['created_at'] = Carbon::now();
         $form['updated_at'] = Carbon::now();
         $feedComment = new FeedComment;

@@ -8,7 +8,8 @@
                     <div><img :src="feed.img_path"></div>
                     <div>{{ feed.description }}&hellip;</div>
                     <div>{{ feed.date }}</div>
-                    <div>{{ feed.team }}</div>                   
+                    <div>{{ feed.team }}</div>
+                    <div>{{ feed }}</div>               
                 </div>
             </div>
             <modal 

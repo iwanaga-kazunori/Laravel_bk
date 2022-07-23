@@ -16,8 +16,7 @@ class Feed extends Model
         'body' => 'required',
     );
 
-    public function comments()
-    {
-        return $this->hasMany(FeedComment::class, 'news_id');
+    public function comments() {
+        return $this->hasMany('App\FeedComment', 'news_id', 'news_id');
     }
 }

@@ -14,8 +14,12 @@ class FeedComment extends Model
         'user_id',
         'news_id'
     ];
+    public static $rules = array(
+        'news_id' => 'required',
+        'edited_at' => 'required',
+    );
 
     public function feed() {
-        return $this->belongsTo(Feed::class, 'news_id');
+        return $this->belongsTo('App\Feed', 'news_id', 'news_id');
     }
 }
