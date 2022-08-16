@@ -4,6 +4,10 @@
     height: auto !important;
   }
 </style>
+<script src="{{ asset('js/app.js') }}" defer></script>
+<div id="app">
+  <spinner></spinner>
+</div>
 <div class="container-lg" style="width:900px;overflow:hidden;margin:0 auto;display:flex;flex-wrap:wrap;">
 @foreach($rss_content as $value)
   <div style="width:45%;margin:2%">
@@ -21,6 +25,7 @@
   </div>
   
 @endforeach
+{{ $rss_content->links() }}
 </div>
 
 

@@ -4,8 +4,7 @@
 <script src="{{ asset('js/feed.js') }}" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="api-token" content="{{ $user->api_token }}">
-    <meta name="user_id" content="{{ $user->id }}">
+    
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     <link href="{{ asset('css/modal.css') }}" rel="stylesheet">
@@ -63,13 +62,17 @@
                 </div>
             </div>
         </nav>
-    <h2>Feed一覧</h2>
-    
-    <div>
-    
-        <feed-list></feed-list>
+    <form action="image_confirm" method="post" enctype="multipart/form-data" id="form">
+        @csrf
+        ファイル：
+        <input type="file" name="imagefile" value=""/><br /><br />
+
+        商品名：<br />
+        <input type="text" name="image_name" size="50" value="{{ old('name') }}"/><br /><br />
+
+        <input type="submit" name="confirm" id="button" value="確認" />
+    </form>
     </div>
-</div>
 </div>
 </body>
 </html>

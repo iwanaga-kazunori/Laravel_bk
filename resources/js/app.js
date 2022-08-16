@@ -13,6 +13,8 @@ import axios from 'axios';
 
 import VModal from 'vue-js-modal';
 Vue.use(VModal);
+import Spinner from 'vue-simple-spinner';
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -28,7 +30,7 @@ Vue.use(VModal);
 // Vue.component('matches-component', require('./components/MatchesComponent.vue').default);
 // Vue.component('hooper-component', require('./components/HooperComponent.vue').default);
 // Vue.component('modal-component', require('./components/ModalComponent.vue').default);
-
+Vue.component('User', require('./components/User.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -37,6 +39,9 @@ Vue.use(VModal);
 
 const app = new Vue({
     el: '#app',
+    components: {
+        Spinner
+      },
     data() {
         return {
             // matches: null

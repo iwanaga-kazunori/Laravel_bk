@@ -16,12 +16,13 @@ class CreateFeedCommentsTable extends Migration
         Schema::create('feed_comments', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->unsignedBigInteger('feed_id');
-            $table->unsignedBigInteger('user_id');
-            $table->string('news_id');
+            $table->unsignedBigInteger('user_id')
+                    ->foreign('user_id')
+                    ->references('id')
+                    ->on('users');
+            $table->unsignedBigInteger('news_id');
 
-            $table->foreign('feed_id')->references('id')->on('feed');
-            $table->foreign('user_id')->references('id')->on('users');
+            
             $table->string('comment', 1000);
 
             $table->timestamps();

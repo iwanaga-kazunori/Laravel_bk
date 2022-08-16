@@ -12,6 +12,7 @@ use App\Feed;
 use App\Services\ApiTokenService;
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Resources\FeedCollection;
+use Illuminate\Pagination\Paginator;
 
 class FeedController extends Controller
 {
@@ -21,7 +22,7 @@ class FeedController extends Controller
        $this->apiTokenService = $apiTokenService;
     }
     //
-    public function feed()
+    public function feed(Request $request)
     {
         // RSSのURL
         $url = 'https://kicker.town/feed';
@@ -55,13 +56,21 @@ class FeedController extends Controller
             $delimiter_end = '" alt=""';  //区切り文字（終了）
             $start_position = strpos($target_text, $delimiter_start) + strlen($delimiter_start);  //開始位置
             $length = strpos($target_text, $delimiter_end) - $start_position;  //切り出す部分の長さ
-            $img_path = substr($target_text, $start_position, $length );  //切り出し　＊＊＊
+            $img_path = mb_substr($target_text, $start_position, $length, "utf-8" );  //切り出し　＊＊＊
+            $search = '/\.gif$|\.png$|\.jpg$|\.jpeg$|\.bmp$/i';
+            if(preg_match($search, $img_path)){
+                $img_path = $img_path;
+                print('ok');
+               }else{
+                $img_path = 'noimage.png';
+                print('no');
+               }
             
             //contennt不要部分削除
-            $delimiter_end2 = '<p>The post';  //区切り文字（終了）
-            $start_position2 = 0;  //開始位置
-            $length2 = strpos($target_text, $delimiter_end2) - $start_position2;  //切り出す部分の長さ
-            $content = substr($target_text, $start_position2, $length2);  //切り出し　＊＊＊
+            // $delimiter_end2 = '<p>The post';  //区切り文字（終了）
+            // $start_position2 = 0;  //開始位置
+            // $length2 = strpos($target_text, $delimiter_end2) - $start_position2;  //切り出す部分の長さ
+            // $content = substr($target_text, $start_position2, $length2);  //切り出し　＊＊＊
 
             // 登録用の配列を作る
             $rss_content = [
@@ -76,7 +85,7 @@ class FeedController extends Controller
                 'updated_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
             ];
-            
+            // dd($rss_content);
             $check = Feed::where('news_id', '=',  $news_id)->first();
                 if ($check === null) {
                 // DBに情報がなければ登録する
@@ -85,13 +94,16 @@ class FeedController extends Controller
 
             // 表示用にすべてを配列に入れる
             $rss_contents[] = $rss_content;
-            $feeds = Feed::all();
-            $comments = Feed::find(1)->comments;
-            dd($comments);
-            // dd($detail->comments);
         }
+        // $rss_contents = new Paginator(
+        //     $rss_contents,
+        //     10,
+        //     null,
+        // );
 
-        return view('feed.index', ['rss_content' => $rss_contents, 'feeds' => $feeds]);
+        $rss_contents = Feed::orderByDesc('created_at')->paginate(10);
+        // dd($rss_contents);
+        return view('feed.index', ['rss_content' => $rss_contents]);
     }
 
 
@@ -110,12 +122,19 @@ class FeedController extends Controller
      */
     public function apiFeed(): \Illuminate\Http\JsonResponse
     {
-        $feed = Feed::orderByDesc('created_at')
-            ->limit(5)
-            ->get();
+        // $feed = Feed::orderByDesc('created_at')
+        //     ->limit(5)
+        //     ->with(['comments.user'])
+        //     ->get();
+        $feed = Feed::orderByDesc('created_at')->with(['comments.user'])->paginate(10);
         
+        $feed_comment = FeedComment::get();
+
         foreach ($feed as $detail){
             $detail->comments;
+        }
+        foreach ($feed_comment as $detail){
+            $detail->user;
         }
         
 //        $collection = new FeedCollection($feed);
@@ -124,6 +143,7 @@ class FeedController extends Controller
 
 
         return response()->json($feed);
+        
 
     }
 
@@ -133,6 +153,7 @@ class FeedController extends Controller
 
         // 開発用にユーザーIDをセットする
         
+        unset($form['feed_id']);
         
         $form['created_at'] = Carbon::now();
         $form['updated_at'] = Carbon::now();
