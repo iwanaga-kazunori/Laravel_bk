@@ -19,7 +19,7 @@ class FeedComment extends Model
         'edited_at' => 'required',
     );
 
-    public function feed() {
-        return $this->belongsTo('App\Feed', 'news_id', 'news_id');
+    public function user() {
+        return $this->belongsTo('App\User');
     }
 }

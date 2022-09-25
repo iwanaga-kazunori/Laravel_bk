@@ -1,12 +1,15 @@
 
 require('./bootstrap');
+require('vue-moment');
 
 import Vue from'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import Spinner from 'vue-simple-spinner'
+import VueLoading from 'vue-loading-template'
+import Slick from 'vue-slick';
 Vue.use(Vuex)
-
+Vue.use(VueLoading)
+Vue.component('matches-component', require('./components/MatchesComponent.vue').default);
 import FeedList from './components/FeedListComponent'
 const store = new Vuex.Store({
     state: {
@@ -20,7 +23,9 @@ const store = new Vuex.Store({
         last_page: "",
         range: 5,
         front_dot: false,
-        end_dot: false
+        end_dot: false,
+        loading: "",
+        matches: [],
     },
     mutations: {
         getFeeds (state) {
@@ -64,6 +69,12 @@ const store = new Vuex.Store({
         isSendingReset (state) {
             state.isSending = false
         },
+        // loadingOn (state) {
+        //     state.loading = true
+        // },
+        // loadingOff (state) {
+        //     state.loading = false
+        // },
         // 記事のコメントを一時取得する
         getPostComment () {
             return state.postComment
@@ -72,12 +83,49 @@ const store = new Vuex.Store({
         setPostComment (state, value) {
             state.postComment = value
         },
+        setMatches : function(state,matches) {
+            state.matches = matches
+        },
+    },
+    actions: {
+        getMatches (state){
+            axios.get('api/matches')
+            .then(function (response) {
+                console.log(response.data)
+                store.commit('setMatches',response.data)
+            })
+            .catch(function (error) {
+                    console.log(error)
+            })
+        }
     },
 });
 
 const app = new Vue({
     el: '#app',
-    components: { FeedList } ,
+    components: { FeedList,Slick } ,
     store,
-    Spinner,
+    
+    data() {
+        return {
+          date: this.$moment().format(),
+        };
+      },
+      data: {
+        //メイン
+        slickOptions: {
+            slidesToShow: 1,
+            arrows: true,
+            centerMode: true,
+            initialSlide: 1,
+            centerPadding: '10%',
+            asNavFor: '.slider-nav',
+        },
+        //サムネイル
+        slickNavOptions: {
+            slidesToShow: 5,
+            asNavFor: '.slider-for',
+            focusOnSelect: true,
+        },
+    },
 })

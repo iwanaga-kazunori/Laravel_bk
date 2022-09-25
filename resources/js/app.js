@@ -8,7 +8,7 @@ require('./bootstrap');
 
 // window.Vue = require('vue');
 import Vue from 'vue';
-
+import Slick from 'vue-slick';
 import axios from 'axios';
 
 import VModal from 'vue-js-modal';
@@ -40,58 +40,30 @@ Vue.component('User', require('./components/User.vue').default);
 const app = new Vue({
     el: '#app',
     components: {
-        Spinner
+        Spinner,
+        Slick 
       },
-    data() {
-        return {
-            // matches: null
-        }
+    data: {
+        //メイン
+        slickOptions: {
+            slidesToShow: 1,
+            arrows: true,
+            centerMode: true,
+            initialSlide: 1,
+            centerPadding: '10%',
+            asNavFor: '.slider-nav',
+        },
+        //サムネイル
+        slickNavOptions: {
+            slidesToShow: 5,
+            asNavFor: '.slider-for',
+            focusOnSelect: true,
+        },
     },
     mounted () {
-        // this.getMatches()
+        
     },
     methods: {
-        getMatches () {
-            axios.get('/api/matches')
-            .then (function (response){
-                console.log(response)
-                this.matches = response.body
-            })
-            .catch (function (error){
-                console.log(error)
-            })
-        },
-
+        
     },
-  //       el: '#app',
-  //     methods: {
-  //       show : function() {
-  //         this.$modal.show('hello-world');
-  //       },
-  //       hide : function () {
-  //         this.$modal.hide('hello-world');
-  //       },
-  // },
-
-
-//     el: '#app2',
-// 　　data: {
-// 　　　　modalVisible: false, // モーダル
-// 　　　　modalBgVisible: false //モーダル背景色（薄黒）
-// 　　},
-// 　　methods: {
-// 　　　　showModal: function(){
-// 　　　　　　this.modalVisible = true
-// 　　　　　　this.modalBgVisible = true
-//     },
-//     closeModal: function(){
-//       this.modalVisible = false
-//       this.modalBgVisible = false
-//     },
-//     cancelEvent: function(){
-//      event.stopPropagation()
-//     }
-//   },
-
-
 });

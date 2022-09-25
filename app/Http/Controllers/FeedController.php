@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\FeedComment;
+use App\Team;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,12 +127,14 @@ class FeedController extends Controller
         //     ->limit(5)
         //     ->with(['comments.user'])
         //     ->get();
-        $feed = Feed::orderByDesc('created_at')->with(['comments.user'])->paginate(10);
+        $feed = Feed::orderByDesc('created_at')->with(['comments.user','teammaster'])->paginate(10);
         
         $feed_comment = FeedComment::get();
-
         foreach ($feed as $detail){
             $detail->comments;
+        }
+        foreach ($feed as $detail){
+            $detail->teammaster;
         }
         foreach ($feed_comment as $detail){
             $detail->user;

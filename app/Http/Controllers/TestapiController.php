@@ -36,7 +36,7 @@ class TestapiController extends Controller
             \log::debug(print_r($matches,true));
             $matches = json_encode($matches);
         }
-        //dd($matches);
+        // dd($matches);
         $matches_decoded = json_decode($matches, true);
         //echo '<pre>' .print_r($matches_decoded,true).'</pre>';
         return view('testapi.index', ['matches' => $matches_decoded]);
@@ -47,7 +47,7 @@ class TestapiController extends Controller
         $uri = 'http://api.football-data.org/v2/competitions/BL1/matches';
         $header = array('headers' => array('X-Auth-Token' => $this->api_token));
         $cache_key = 'api.football-data.org/v2/competitions/BL1/matches';
-        $matches = '';
+        $matches = [];
         $client = new Client();
         if (Cache::has($cache_key)) {
             $matches = Cache::get($cache_key);

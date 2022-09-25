@@ -1,34 +1,18 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- CSRF Token -->
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<meta name="api-token" content="{{ $user->api_token }}">
-<meta name="user_id" content="{{ $user->id }}">
-
-<!-- Scripts -->
 <script src="{{ asset('js/feed.js') }}" defer></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
-<!-- Fonts -->
-<link rel="dns-prefetch" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
-
-<!-- Styles -->
-<link href="{{ asset('css/app.css') }}" rel="stylesheet">
-<link href="{{ asset('css/modal.css') }}" rel="stylesheet">
-<link href="{{ asset('css/feed.css') }}" rel="stylesheet">
-
-<title>@yield('title')</title>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/modal.css') }}" rel="stylesheet">
 </head>
 <body>
-
+<div class="container">
 <div id="app">
-<nav class="navbar navbar-expand-md navbar-dark bg-black shadow-sm">
+<nav class="navbar navbar-expand-md navbar-light bg-black shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -78,29 +62,25 @@
                 </div>
             </div>
         </nav>
-    
-    
-    <slick ref="slick" :options="slickNavOptions" class="slider-nav">
-      <div style="text-align:center;">マイページ</div>
-      <div style="text-align:center;">新着情報</div>
-      <div style="text-align:center;">試合結果・日程</div>
-      <div style="text-align:center;">SNSまとめ</div>
-    </slick>
-    <h2 style="text-align:center;font-size:1.4em;padding-bottom:20px;border-bottom: 3px solid #c21500;border-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(221,0,0,1) 50%, rgba(255,207,0,1) 100%); border-image-slice: 1;"></h2>
-    <main class="py-4" style="z-index:9999;">
-        <slick ref="slick" :options="slickOptions" class="slider-for">
-            <div style="height:400px; background: blue;">マイページ</div>
-            <div style=""><feed-list></feed-list></div>
-            <div style="">結果<matches-component></matches-component></div>
-            <div style="height:400px; background: green;">SNS</div>
-        </slick>
-    </main>
-  
-    <div>
-    
-        
+    <form action="team_complete" method="post">
+        @csrf
+        <table border="1">
+            <tr>
+                <td>画像</td>
+                <td><img src="{{ $data['read_temp_path'] }}" width="200" height="130"></td>
+            </tr>
+            <tr>
+                <td>チーム名日本語</td>
+                <td>{{ $data['team_name_ja'] }}</td>
+            </tr>
+            <tr>
+                <td>チーム名ドイツ語</td>
+                <td>{{ $data['team_name_de'] }}</td>
+            </tr>
+        </table>
+        <input type="submit" name="action" value="送信" />
+    </form>
     </div>
 </div>
-
 </body>
 </html>

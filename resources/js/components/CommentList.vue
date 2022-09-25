@@ -68,6 +68,7 @@ export default {
                     content: this.newComment,
                 })
                 this.newComment = ''
+                this.getCommments()
             },
     },
     computed: {

@@ -20,6 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('matches', 'TestapiController@api');
 
 Route::get('feed', 'FeedController@apiFeed')->middleware('auth:api');
+// ->middleware('auth:api');
+
 Route::put('feed', 'FeedController@apiStore');
 
 Route::get('comments/{comment_id}', 'FeedController@apiGetComments')->middleware('auth:api');
@@ -27,3 +29,5 @@ Route::get('comments/{comment_id}', 'FeedController@apiGetComments')->middleware
 Route::middleware('auth:api')->get('/user', function(Request $request) {
     return $request->user();
 });
+
+Route::get('/users', 'UserController@index');

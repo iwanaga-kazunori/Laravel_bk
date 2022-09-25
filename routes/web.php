@@ -35,10 +35,20 @@ Route::get('feed', 'FeedController@feed');
 Route::get('feedRead', 'FeedController@feedRead')->middleware('auth');
 Route::get('football/teams', 'Football\TeamController@index');
 Route::get('football/team/{id}', 'Football\TeamController@detail')->name('team.detail');
+Route::get('/test', 'TestController@index');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/', 'NewsController@index');
+// Route::get('/', 'NewsController@index');
 Route::get('/profile', 'ProfileController@index');
+
+Route::get('/image_input', 'ImageController@getImageInput');
+Route::post('/image_confirm', 'ImageController@postImageConfirm');
+Route::post('/image_complete', 'ImageController@postImageComplete');
+
+Route::get('/team_input', 'TeamMasterController@getTeamInput');
+Route::post('/team_confirm', 'TeamMasterController@postTeamConfirm');
+Route::post('/team_complete', 'TeamMasterController@postTeamComplete');
+
