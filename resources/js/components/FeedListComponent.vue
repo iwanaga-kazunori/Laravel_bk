@@ -1,29 +1,18 @@
 <template>
-    <div>
-        <div>
-            <h2 style="text-align:center;font-size:1.4em;padding-bottom:20px;">新着情報</h2>
-            <!-- <Loading v-show="loading"></Loading> -->
-            <!-- {{ matches }} -->
-            
-            <!-- <div>
-                {{ this.$store.state.current_page }}<br>
-                {{ this.$store.state.last_page }}<br>
-                {{ this.$store.state.range }}<br>
-                {{  this.$store.state.front_dot }}<br>
-                {{  this.$store.state.end_dot }}</div><br> -->
-            <div  class="container-lg d-flex justify-content-around flex-wrap">
-                <div v-for="(feed, index) in feeds" class="col-md-3 feed" @click="ModalShow(index)"
-                style="background-color: rgba(0,0,0,0.4);margin: 30px 10px 10px 10px;padding: 15px;border-radius:3px;box-shadow: -3px 3px 5px rgba(221, 0, 0, 0.7), 3px -3px 5px rgba(255, 207, 0, 0.7)">
-                    <h3 style="font-size:1.1em;line-height: 150%;height:4.0em">{{ feed.title }}</h3>
-                    <!-- <p>NEWSID:{{ feed.news_id }}</p> -->
-                    <div style="width: 100%;overflow: hidden;">
-                        <div style="width:100%;"><img :src="feed.img_path" width="100%"></div>
-                        <div style="width:100%;">
-                            <p>{{ feed.date }}</p>
-                            <!-- <p style="font-size:0.9em;">{{ feed.description }}。。。続きを読む</p> -->
-                            <p>{{ feed.team }}</p>
-                            <div v-if="feed.teammaster" style="width:50px;"><img :src="'/'+feed.teammaster.path"></div>
+    <div class="container feedlist">
+        <div class="row justify-content-center">
+            <h2>Nachricht</h2>
+            <div class="d-flex justify-content-around flex-wrap">
+                <div v-for="(feed, index) in feeds" class="col-md-3 col-6 feed" @click="ModalShow(index)">
+                    <div class="bg">
+                        <div class="thumbnail">
+                            <div class="img"><img :src="feed.img_path"></div>
+                            <div v-if="feed.teammaster" class="logo">
+                                <img :src="'/'+feed.teammaster.path">
+                            </div>
                         </div>
+                        <p class="date">{{ feed.date }}</p>
+                        <h3>{{ feed.title }}</h3>
                     </div>
                 </div>
             </div>
@@ -31,69 +20,70 @@
                 name="feed" 
                 v-on:click="ModalShow"
                 :draggable="true"
-                height="80%">
+                height="80%"
+                width="90%"
+            >
                 <div class="modal-header" v-if="this.$store.state.selectFeedId !== null">
-                    
-                    <h3>{{ feeds[this.$store.state.selectFeedId].title }}</h3>
-                    <p>{{ feeds[this.$store.state.selectFeedId].date }}</p>
-                    <p>{{ feeds[this.$store.state.selectFeedId].team }}</p>
+                    <table>
+                        <tr>
+                            <td class="date">{{ feeds[this.$store.state.selectFeedId].date }}</td>
+                            <td class="team">{{ feeds[this.$store.state.selectFeedId].team }}</td>
+                            <td rowspan="2" class="logo"><img :src="'/'+feeds[this.$store.state.selectFeedId].teammaster.path"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="title"><h3>{{ feeds[this.$store.state.selectFeedId].title }}</h3></td>    
+                        </tr>
+                    </table>
                 </div>
                 <div class="modal-body">
                     <div class="" v-if="this.$store.state.selectFeedId !== null">
                         <div ref="news_id" class="news_id">{{ feeds[this.$store.state.selectFeedId].news_id }}</div>
-                        <div v-html="feeds[this.$store.state.selectFeedId].content"></div>
+                        <div v-html="feeds[this.$store.state.selectFeedId].content" class="feed_content"></div>
                         <h3>コメント一覧</h3>
-                        <hr>
-                        <div v-if="feeds[this.$store.state.selectFeedId].comments.length">
+                        <div v-if="feeds[this.$store.state.selectFeedId].comments.length" class="feed_comment">
                             <table>
-                                <tr><th>日付</th><th>名前</th><th>コメント</th></tr>
                                 <tr v-for="comment in feeds[this.$store.state.selectFeedId].comments">
-                                    <td>{{ comment.user.created_at | moment("YYYY/MM/DD") }}　</td>
-                                    <td>{{ comment.user.name }}　</td>
-                                    <td>{{ comment.comment }}</td>
+                                    <td class="date">{{ comment.created_at | moment("YYYY/MM/DD") }}　</td>
+                                    <td class="name"><img :src="'/storage/images/' + comment.user.profile_image" width="10px">{{ comment.user.name }}　</td>
+                                    <td class="comment">{{ comment.comment }}</td>
                                 </tr>
                             </table>
                             <hr>
                         </div>
-                        <div v-else>
-                            コメントがありません。
+                        <div v-else class="feed_comment_none">
+                            <hr>
+                            <p>コメントがありません。</p>
                         </div>
-                        <div v-if="isSending == false">
+                        <p style="color:red;font-weight:bold;background-color: #800;">{{ error }}</p>
+                        <div v-if="isSending == false" class="commnet_post">
                             <div>
-                                <textarea
-                                    v-model="commentForm"
-                                    ></textarea>  
+                                <textarea v-model="commentForm"></textarea>  
                             </div>
-                            <div>
-                                <button v-on:click="SendPostComment">
-                                    投稿する
-                                </button>
+                            <div class="button">
+                                <button v-on:click="SendPostComment">投稿</button>
                             </div>
                         </div>
-                        <div v-else>投稿中(しばらくお待ちください)</div>
-                        <hr>
+                        <div v-else class="issending">投稿中<br>しばらくお待ちください</div>
                     </div>
                 </div>
-                <button v-on:click="ModalHide">
-                    閉じる
-                </button>
+                <button v-on:click="ModalHide" class="close_button">close</button>
             </modal>
-            <div style="text-align: center;margin-top: 30px;">
-            <ul class="pagination" style="justify-content: center;">
-                <li class="inactive" 
-                    :class="(this.$store.state.current_page == 1) ? 'disabled' : ''"
-                    @click="changePage(currentPage-1)"
-                >&laquo;</li>
-                <li v-for="page in frontPageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
-                <li v-show="this.$store.state.front_dot" class="inactive disabled">...</li>
-                <li v-for="page in middlePageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
-                <li v-show="this.$store.state.end_dot" class="inactive disabled">...</li>
-                <li v-for="page in endPageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
-                <li class="inactive"
-                    :class="(this.$store.state.current_page >= this.$store.state.last_page) ? 'disabled' : ''"
-                    @click="changePage(currentPage + 1)"
-                >&raquo;</li>
-            </ul>
+            <div class="pagination_bg">
+                <ul class="pagination">
+                    <li class="inactive" 
+                        :class="(this.$store.state.current_page == 1) ? 'disabled' : ''"
+                        @click="changePage(currentPage-1)"
+                    >&laquo;</li>
+                    <li v-for="page in frontPageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
+                    <li v-show="this.$store.state.front_dot" class="inactive disabled">...</li>
+                    <li v-for="page in middlePageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
+                    <li v-show="this.$store.state.end_dot" class="inactive disabled">...</li>
+                    <li v-for="page in endPageRange" :key="page" @click="changePage(page)" :class="(isCurrent(page)) ? 'active' : 'inactive'">{{ page }}</li>
+                    <li class="inactive"
+                        :class="(this.$store.state.current_page >= this.$store.state.last_page) ? 'disabled' : ''"
+                        @click="changePage(currentPage + 1)"
+                    >&raquo;</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -103,10 +93,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VModal from 'vue-js-modal'
-import CommentList from './CommentList'
 import vueMoment from 'vue-moment'
-import { VueLoading } from 'vue-loading-template'
-import Loading from './Loading'
+import Loading from './LoadingComponent'
 
 Vue.use(Vuex)
 Vue.use(VModal)
@@ -114,24 +102,32 @@ Vue.use(vueMoment)
 
 export default {
     name: "FeedList",
-    data() {
-        return {
-            loading: "true",
-        }
+    components: {
+        Loading,
     },
-    // メソッド一覧
-    methods: {
-        button4 () {
-            
-            this.$store.commit('getFeeds')
-            
+    data: function() {
+        return { 
+            error: '',
+        }   
+    },
+    watch: {
+        feeds: function(newVal, oldVal) {
+            // データが変化した時に行いたい処理
+            // console.log("=====watch=====")
+            // console.log(newVal, oldVal)
         },
-        async getFeeds (store, page) {
-            // this.loadingOn()
+        deep : true,
+    },
+    mounted () {
+        this.$store.dispatch('getFeeds')
+        this.$store.dispatch('getMatches')
+    },
+    methods: {
+        // ページネーション時の新着情報取得
+        getFeeds (store, page) {
             let token = document.head.querySelector('meta[name=api-token]')
-            const url = '/api/feed?page=' + page + '&api_token=' + token.content
-                        
-            await axios.get(url)
+            const url = '/api/feed?page=' + page + '&api_token=' + token.content         
+            axios.get(url)
                 .then(function (response) {
                     store.commit('setFeeds', response.data.data)
                     store.commit('setCurrentPage', response.data.current_page)
@@ -140,15 +136,18 @@ export default {
                 .catch(function (error) {
                     console.log(error)
                 })
-            // this.loadingOff()
         },
+        // モーダルオープン
         ModalShow (i) {
+            this.error= ''
             this.$store.commit('selectFeedId', i)
             this.$modal.show('feed')
         },
+        // モーダルクローズ
         ModalHide () {
-            this.$modal.hide('feed')            
+            this.$modal.hide('feed')
         },
+        // ページネーション
         calRange(start, end) {
             const range = [];
             for (let i = start; i <= end; i++) {
@@ -156,86 +155,77 @@ export default {
             }
             return range
         },
-        async changePage(page) {
-            this.loading = true;
-            console.log(page)
-            console.log(typeof page)
+        changePage(page) {
+            this.isLoadingOn()
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
             if (page > 0 && page <= this.$store.state.last_page) {
                 this.$store.state.current_page = page
-                
-                await this.getFeeds(this.$store, page)
-                
+                this.getFeeds(this.$store, page)
             }
-            
+            setTimeout(() => {
+                this.isLoadingOff();}
+                ,4000
+            )
         },
         isCurrent(page) {
             return page === this.$store.state.current_page
         },
+        // コメント取得後新着情報更新
         UpdateState () {
             this.$store.commit('getFeeds')
         },
+        // コメント投稿時のメソッド
         isSendingChange () {
             this.$store.commit('isSendingChange')
         },
         isSendingReset () {
             this.$store.commit('isSendingReset')
         },
-        // loadingOn () {
-        //     this.$store.commit('loadingOn')
-        // },
-        // loadingOff () {
-        //     this.$store.commit('loadingOff')
-        // },
+        // コメント投稿
         async SendPostComment () {
-            this.isSendingChange()
-            let url = '/api/feed'
-            //userのidを取得
-            let user_id = document.head.querySelector('meta[name=user_id]')
-            console.log(user_id.content)
-            //userのnews_idを取得
-            var news_id = this.$refs.news_id
-            console.log(news_id.innerHTML)
-            
-            let params = {
-                feed_id: this.$store.state.selectFeedId,
-                comment: this.$store.state.postComment,
-                user_id: user_id.content,
-                news_id: news_id.innerHTML
+            if (!this.$store.state.postComment) {
+                // console.log('コメントなし')
+                this.error='コメントを入力してください'
             }
+            if (this.$store.state.postComment) {
+                // console.log('コメントあり')
+                this.isSendingChange()
+                let url = '/api/feed'
+                //userのidを取得
+                let user_id = document.head.querySelector('meta[name=user_id]')
+                //userのnews_idを取得
+                var news_id = this.$refs.news_id
             
-            // Ajaxでデータを投げる
-            await axios.put(url, params)
-                .then(function (response) {
-                    // this.ModalHide()
-                    console.log(response)                    
-                })
-                .catch(function (error) {
-                    console.log(error)
-                })
-            this.UpdateState()
-            alert('アップロードが完了しました！');
-            this.ModalHide()
-            this.isSendingReset()
+                let params = {
+                    feed_id: this.$store.state.selectFeedId,
+                    comment: this.$store.state.postComment,
+                    user_id: user_id.content,
+                    news_id: news_id.innerHTML
+                }
+            
+                // Ajaxでデータを投げる
+                await axios.put(url, params)
+                    .then(function (response) {
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    })
+                this.$store.state.postComment = ''
+                this.UpdateState()
+                alert('投稿が完了しました！');
+                this.ModalHide()
+                this.isSendingReset()
+            }
         },
-        
-    },
-    // 読み込み直後に起動するもの
-    async mounted () {
-        console.log('mounted')
-        // this.loadingOn()
-        await this.button4()
-        this.$store.dispatch('getMatches')
-                
-    },
-    updated() {
-        console.log('=====');
-        this.loading = false;
-    },
-    async created () {
-        console.log('created')
-        // this.loadingOn()
-        // await this.button4()
-        // this.loadingOff()
+        isLoadingOn () {
+            this.$store.commit('isLoadingOn')
+        },
+        isLoadingOff () {
+            this.$store.commit('isLoadingOff')
+        },
     },
     computed: {
         feeds: function(){
@@ -244,9 +234,9 @@ export default {
         selectFeedId: function(){
   		        return this.$store.state.selectFeedId
   	    },
-          matches: function(){
+        matches: function(){
                 return this.$store.state.matches
-            },
+        },
         isSending: function(){
   		        return this.$store.state.isSending
   	    },
@@ -261,14 +251,6 @@ export default {
                 this.$store.commit('setPostComment', value)
             }
         },
-        // isSending: {
-        //     get () {
-        //         return this.$store.getters.isSending
-        //     },
-        //     set () {
-        //         this.$store.commit('isSending',)
-        //     }
-        // }
         sizeCheck: function() {
             if (this.$store.state.last_page <= this.$store.state.range + 4) {
                 return false
@@ -311,73 +293,12 @@ export default {
             if (!this.sizeCheck) return []
                 return this.calRange(this.$store.state.last_page - 1, this.$store.state.last_page)
         },
-        
+        isloading() {
+            return this.$store.state.isloading
+        } 
     },
-   
-    components: {
-        CommentList,
-        VueLoading,
-        Loading,
-    }
 }
 </script>
-
 <style scoped>
-.modal-header, .modal-body {
-    color: #333;
-    display: block;
-}
-.modal-header h3{
-    font-size: 1.3em;
-}
-.modal-header, .modal-body {
-    padding: 20px;
-}
-.modal-body .news_id {
-    display: none;
-}
-.modal-body h3{
-    text-align: center;
-    font-size: 1.3em;
-}
-.modal-body > textarea {
-    width: 400px;
-    color: #ff0000;
-}
-.modal-header {
-    border-bottom: 3px solid #c21500;
-    border-image: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(221,0,0,1) 50%, rgba(255,207,0,1) 100%);
-    border-image-slice: 1;
-}
-img {
-    width:100%;
-}
-.pagination {
-        display: flex;
-        list-style-type: none;
-    }
-    .pagination li {
-        border: 1px solid #ddd;
-        padding: 6px 12px;
-        text-align: center;
-    }
-    .active {
-        background-color: #3377ab;
-        color:white;
-    }
-    .inactive{
-        color: #fff;
-    }
-    .pagination li + li {
-        border-left: none;
-    }
-    .disabled {
-  cursor: not-allowed;
-}
-td {
-    white-space: pre-line;
-}
-p {
-    margin: 0px;
-}
+
 </style>

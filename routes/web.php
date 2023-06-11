@@ -36,12 +36,12 @@ Route::get('feedRead', 'FeedController@feedRead')->middleware('auth');
 Route::get('football/teams', 'Football\TeamController@index');
 Route::get('football/team/{id}', 'Football\TeamController@detail')->name('team.detail');
 Route::get('/test', 'TestController@index');
+Route::post('/test', 'TestController@update')->name('test.update');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-// Route::get('/', 'NewsController@index');
 Route::get('/profile', 'ProfileController@index');
 
 Route::get('/image_input', 'ImageController@getImageInput');

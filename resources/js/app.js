@@ -26,7 +26,7 @@ import Spinner from 'vue-simple-spinner';
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 // Vue.component('matches-component', require('./components/MatchesComponent.vue').default);
 // Vue.component('hooper-component', require('./components/HooperComponent.vue').default);
 // Vue.component('modal-component', require('./components/ModalComponent.vue').default);
@@ -39,31 +39,10 @@ Vue.component('User', require('./components/User.vue').default);
 
 const app = new Vue({
     el: '#app',
+    data: {
+      checkflg : false,
+    },
     components: {
         Spinner,
-        Slick 
       },
-    data: {
-        //メイン
-        slickOptions: {
-            slidesToShow: 1,
-            arrows: true,
-            centerMode: true,
-            initialSlide: 1,
-            centerPadding: '10%',
-            asNavFor: '.slider-nav',
-        },
-        //サムネイル
-        slickNavOptions: {
-            slidesToShow: 5,
-            asNavFor: '.slider-for',
-            focusOnSelect: true,
-        },
-    },
-    mounted () {
-        
-    },
-    methods: {
-        
-    },
 });

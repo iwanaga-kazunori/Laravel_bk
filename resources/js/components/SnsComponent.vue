@@ -8,12 +8,7 @@
                     <div class="card-body">
                         I'm an example component.
                     </div>
-                    <p style="color:black">{{ favoriteteams.id }}</p>
-                    <ul id="example-1">
-                        <li v-for="favoriteteam in favoriteteams.favorite_teams" style="color:black">
-                        {{ favoriteteam }}
-                        </li>
-                    </ul>
+                    
                 </div>
             </div>
         </div>
@@ -22,12 +17,6 @@
 
 <script>
     export default {
-        props: {
-            favoriteteams: {
-                type: Object,
-                required: true
-            },
-        },
         mounted() {
             
         },

@@ -49,9 +49,11 @@ class TestapiController extends Controller
         $cache_key = 'api.football-data.org/v2/competitions/BL1/matches';
         $matches = [];
         $client = new Client();
-        if (Cache::has($cache_key)) {
+        if (Cache::has($cache_key)
+            // && 1 == 0 
+        ) {
             $matches = Cache::get($cache_key);
-            
+            $matches = json_decode($matches, true);
             \Log::debug(__LINE__.' '.__METHOD__.' キャッシュあり ');
             \log::debug(print_r($matches,true));
         } else {
@@ -59,17 +61,10 @@ class TestapiController extends Controller
             $body = $response->getBody();
             $body_decoded = json_decode($body,false);
             $matches = $body_decoded->matches;
-            //$matches = json_decode($matches, true);
             Cache::put($cache_key, json_encode($matches), 3600);
+
             \Log::debug(__LINE__.' '.__METHOD__.' キャッシュなし ');
-            \log::debug(print_r($matches,true));
-            $matches = json_encode($matches);
         }
-        //dd($matches);
-        $matches_decoded = json_decode($matches, true);
-        //echo '<pre>' .print_r($matches_decoded,true).'</pre>';
         return response()->json($matches);
-        
-        //view('testapi.index', ['matches' => $matches_decoded]);
     }
 }

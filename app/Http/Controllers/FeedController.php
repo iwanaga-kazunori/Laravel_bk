@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\HTML;
 use App\Feed;
+use App\FavoriteTeams;
 use App\Services\ApiTokenService;
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Resources\FeedCollection;
@@ -26,7 +27,7 @@ class FeedController extends Controller
     public function feed(Request $request)
     {
         // RSSのURL
-        $url = 'https://kicker.town/feed';
+        $url = 'https://kicker.town/feed'; //https://fussball.jp/feed
         // 制御文字を取り除く
         $str = preg_replace('/[\x00-\x1f]/',' ',file_get_contents($url));
         //contentを取り出す
@@ -58,20 +59,30 @@ class FeedController extends Controller
             $start_position = strpos($target_text, $delimiter_start) + strlen($delimiter_start);  //開始位置
             $length = strpos($target_text, $delimiter_end) - $start_position;  //切り出す部分の長さ
             $img_path = mb_substr($target_text, $start_position, $length, "utf-8" );  //切り出し　＊＊＊
-            $search = '/\.gif$|\.png$|\.jpg$|\.jpeg$|\.bmp$/i';
+            $search = '/\.gif$|\.png$|\.jpg$|\.jpeg$|\.webp$|\.bmp$/i';
             if(preg_match($search, $img_path)){
                 $img_path = $img_path;
                 print('ok');
                }else{
-                $img_path = 'noimage.png';
+                $img_path = 'storage/images/noimage.png';
                 print('no');
                }
             
             //contennt不要部分削除
-            // $delimiter_end2 = '<p>The post';  //区切り文字（終了）
-            // $start_position2 = 0;  //開始位置
-            // $length2 = strpos($target_text, $delimiter_end2) - $start_position2;  //切り出す部分の長さ
-            // $content = substr($target_text, $start_position2, $length2);  //切り出し　＊＊＊
+            $delimiter_end2 = '<p>The post';  //区切り文字（終了）
+            if(strpos($content,$delimiter_end2) !== false){
+                $start_position2 = 0;  //開始位置
+                $length2 = strpos($target_text, $delimiter_end2) - $start_position2;  //切り出す部分の長さ
+                $content = substr($target_text, $start_position2, $length2);  //切り出し　＊＊＊
+            }
+
+            $delimiter_end3 = '<blockquote';
+            if(strpos($content,$delimiter_end3) !== false){
+                  //区切り文字（終了）
+                $start_position3 = 0;  //開始位置
+                $length3 = strpos($content, $delimiter_end3) - $start_position3;  //切り出す部分の長さ
+                $content = substr($content, $start_position3, $length3);  //切り出し　＊＊＊
+            }
 
             // 登録用の配列を作る
             $rss_content = [
@@ -96,26 +107,18 @@ class FeedController extends Controller
             // 表示用にすべてを配列に入れる
             $rss_contents[] = $rss_content;
         }
-        // $rss_contents = new Paginator(
-        //     $rss_contents,
-        //     10,
-        //     null,
-        // );
-
         $rss_contents = Feed::orderByDesc('created_at')->paginate(10);
         // dd($rss_contents);
         return view('feed.index', ['rss_content' => $rss_contents]);
     }
 
-
     public function feedRead(Request $request)
     {
         $user = Auth::user();
-        
+        $fateams = $user->favoriteteams;
+        // dd($fateams);
         $token = $this->apiTokenService->update($request);
-        
-        // dd($token);
-        return view('feed.read', ['user' => $user, 'token' => $token]);
+        return view('feed.read', ['user' => $user, 'token' => $token, 'fateams' => $fateams]);
     }
 
     /**
@@ -123,11 +126,7 @@ class FeedController extends Controller
      */
     public function apiFeed(): \Illuminate\Http\JsonResponse
     {
-        // $feed = Feed::orderByDesc('created_at')
-        //     ->limit(5)
-        //     ->with(['comments.user'])
-        //     ->get();
-        $feed = Feed::orderByDesc('created_at')->with(['comments.user','teammaster'])->paginate(10);
+        $feed = Feed::orderByDesc('created_at')->with(['comments.user','teammaster'])->paginate(12);
         
         $feed_comment = FeedComment::get();
         foreach ($feed as $detail){
@@ -139,30 +138,18 @@ class FeedController extends Controller
         foreach ($feed_comment as $detail){
             $detail->user;
         }
-        
-//        $collection = new FeedCollection($feed);
-//
-//        return response()->json($collection);
-
-
         return response()->json($feed);
-        
-
     }
 
     public function apiStore(Request $request)
     {
         $form = $request->all();
-
-        // 開発用にユーザーIDをセットする
-        
         unset($form['feed_id']);
         
         $form['created_at'] = Carbon::now();
         $form['updated_at'] = Carbon::now();
         $feedComment = new FeedComment;
 
-        // これだと created_atとupdated_atが入らない。
         $feedComment->fill($form)->save();
         $feedComment->get();
         $id = $feedComment->id;
